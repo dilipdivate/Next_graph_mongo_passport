@@ -1,8 +1,37 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+import Image from 'next/image';
+import BaseLayout from '@/components/layouts/BaseLayout.js';
+import styles from '../styles/Home.module.css';
+import PortfolioCard from './../components/portfolios/PortfolioCard';
+import TopicLink from './../components/Forums/TopicLink';
+import Link from 'next/link.js';
+import { useGetHighlight } from '@/apollo/actions/index';
+import client from '@/apollo/apollo-client.js';
+import { GET_HIGHLIGHT } from '@/apollo/queries/forum.js';
 
-export default function Home() {
+const useGetInitialData = async () => {
+  const data = await useGetHighlight({ variables: { limit: 3 } });
+  console.log('Data retrned:', data);
+  const portfolios = (data && data.highlight.portfolios) || [];
+  const topics = (data && data.highlight.topics) || [];
+  return { portfolios, topics };
+};
+
+export async function getStaticProps() {
+  const { data } = await client.query({
+    query: GET_HIGHLIGHT,
+    variables: { limit: 3 },
+  });
+  const trans = data.highlight;
+
+  return { props: { trans } };
+}
+
+export default function Home(props) {
+  // const { topics, portfolios } = useGetInitialData();
+
+  const { portfolios, topics } = props.trans;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,61 +40,46 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <BaseLayout page="Home">
+        <section className="section-title">
+          <div className="px-2">
+            <div className="pt-5 pb-4">
+              <h1>Portfolio</h1>
+            </div>
+          </div>
+        </section>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+        <section className="pb-5">
+          <div className="row">
+            {portfolios.map((portfolio) => (
+              <div key={portfolio._id} className="col-md-4">
+                <Link
+                  href="/portfolios/[id]"
+                  // as={`/portfolios/${portfolio._id}`}
+                >
+                  <PortfolioCard portfolio={portfolio} />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+        <Link href="/portfolios">See more Portfolios</Link>
+        <section className="section-title">
+          <div className="px-2">
+            <div className="pt-5 pb-4">
+              <h1>Ask Me</h1>
+            </div>
+          </div>
+        </section>
+        <section className="pb-5">
+          <div className="list-group">
+            {topics.map((topic) => (
+              <TopicLink key={topic._id} topic={topic} />
+            ))}
+          </div>
+        </section>
+        <Link href="/forum/categories">See More Posts</Link>
+      </BaseLayout>
     </div>
-  )
+  );
 }
