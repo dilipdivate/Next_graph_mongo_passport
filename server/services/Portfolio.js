@@ -24,6 +24,7 @@ class Portfolio extends BaseModel {
   }
 
   async create(data) {
+    console.log('DilipUser:', this.user, this.writeRights);
     if (!this.user || !this.writeRights.includes(this.user.role)) {
       throw new Error('Not Authorised!!!');
     }

@@ -27,9 +27,9 @@ class User extends BaseModel {
 
   async signIn(signInData, ctx) {
     try {
-      console.log('Is auth b:', ctx.isAuthenticated(), ctx.getUser());
+      // console.log('Is auth b:', ctx.isAuthenticated(), ctx.getUser());
       const user = await ctx.authenticate(signInData);
-      console.log('Is auth a:', ctx.isAuthenticated(), ctx.getUser());
+      // console.log('Is auth a:', ctx.isAuthenticated(), ctx.getUser());
       return user;
     } catch (error) {
       console.log('Is auth error:', ctx.isAuthenticated(), ctx.getUser());
@@ -37,13 +37,14 @@ class User extends BaseModel {
     }
   }
 
-  signOut(ctx) {
+  async signOut(ctx) {
     try {
-      console.log('Is auth:', ctx.isAuthenticated(), ctx.getUser());
+      console.log('Is authb:', ctx.isAuthenticated(), ctx.getUser());
       ctx.logout();
-      console.log('Is auth:', ctx.isAuthenticated(), ctx.getUser());
+      console.log('Is autha:', ctx.isAuthenticated(), ctx.getUser());
       return true;
     } catch (e) {
+      console.log('Is authe:', ctx.isAuthenticated(), ctx.getUser(), e);
       return false;
     }
   }

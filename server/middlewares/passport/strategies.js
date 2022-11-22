@@ -13,12 +13,15 @@ class GraphqlStrategy extends Strategy {
       throw new Error('Graphql strategy requires a verify callback');
     }
 
+    console.log('DilVerify:', verify);
     this.verify = verify;
     this.name = 'graphql';
   }
 
   authenticate(_, options) {
+    console.log('DilipAuth:', options);
     const done = (error, user, info) => {
+      console.log('DilipAuthUser:', user);
       if (error) {
         return this.error(error);
       }

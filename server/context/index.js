@@ -30,14 +30,24 @@ const authenticateUser = (req, options) => {
 };
 
 export const buildAuthContext = (req) => {
+  // console.log(
+  //   'Dilip Build:',
+  //   req.sessionStore.db
+  //     .collection('portfolioSessions')
+  //     .find(req.sesionStore.sessionId)
+  // );
   const auth = {
     authenticate: (options) => authenticateUser(req, options),
-    logout: () =>
-      req.logout(function (err) {
+    logout: () => {
+      req.logout(function (req, res, err) {
         if (err) {
+          console.log(err);
           return next(err);
         }
-      }),
+        console.log('COming here1:', req);
+      });
+      req.session.destroy();
+    },
     isAuthenticated: () => req.isAuthenticated(),
     getUser: () => req.user,
   };

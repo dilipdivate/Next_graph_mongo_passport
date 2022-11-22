@@ -20,8 +20,19 @@ const resolvers = {
     },
 
     user: (parent, args, ctx) => {
+      console.log(ctx.models.User);
+      if (!ctx.models.User || !ctx.models.User.roles.includes('admin')) {
+        return null;
+      }
       return ctx.models.User.getAuthUser(ctx);
     },
+    // users: (parent, args, ctx) => {
+    //   console.log(ctx.models.User);
+    //   if (!ctx.models.User || !ctx.models.User.roles.includes('admin')) {
+    //     return null;
+    //   }
+    //   return ctx.models.User.getAll();
+    // },
     forumCategories: (parent, args, ctx) => {
       return ctx.models.ForumCategory.getAll();
     },

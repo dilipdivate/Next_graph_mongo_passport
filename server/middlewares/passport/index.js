@@ -1,12 +1,12 @@
-const GraphqlStrategy = require('./strategies');
-const User = require('../../models/User.js');
+import GraphqlStrategy from './strategies.js';
+import User from '../../models/User.js';
 
-exports.init = (passport) => {
+export const passportInit = (passport) => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
+  passport.deserializeUser((_id, done) => {
     User.findById(id, (error, user) => {
       done(error, user);
     });
